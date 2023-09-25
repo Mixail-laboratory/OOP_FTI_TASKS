@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <type_traits>
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -15,80 +16,90 @@ class sqrtTraits;
 
 template<typename T>
 class sqrtTraits<std::vector<T>> {
+public:
     typedef std::vector<T> sqrtType;
+private:
+    const static bool vec = true;
+};
+template<typename T>
+class sqrtTraits<std::list<T>> {
+public:
+    typedef std::list<T> sqrtType;
+private:
+    const static bool vec = true;
+};
+template<typename T>
+class sqrtTraits<std::forward_list<T>> {
+public:
+    typedef std::forward_list<T> sqrtType;
+private:
+    const static bool vec = true;
+    
+};
+
+template<typename T>
+class sqrtTraits<std::set<T>> {
+public:
+    typedef std::set<T> sqrtType;
+private:
+    const static bool set = true;
+};
+template<typename T>
+class sqrtTraits<std::unordered_set<T>> {
+public:
+    typedef std::unordered_set<T> sqrtType;
+private:
+    const static bool set = true;
 };
 
 template <typename K, typename V>
 class sqrtTraits<std::map<K, V>>{
 public:
     typedef std::map<K, V> sqrtType;
+private:
+    const static bool map = true;
 };
 
-template <typename T>
-T sqrT(const T & x){
-    if (x >= 0) return sqrt(x);
-    else return 0;
-}
+template <typename K, typename V>
+class sqrtTraits<std::unordered_map<K, V>>{
+public:
+    typedef std::unordered_map<K, V> sqrtType;
+private:
+    const static bool map = true;
+};
+
 
 template <typename T>
-auto sqrT(const T & inp){
+typename std::enable_if_t<std::is_arithmetic<T>::value, T> sqrT(const T & x){
+    if (!std::is_arithmetic<T>::value) return "not a number";
+    if (x < 0) return "neg number";
+    else return sqrt(x);
+}
+//template for map/unordered_map
+template <typename T>
+typename std::enable_if_t<sqrtTraits<T>::map, T> sqrT(const T & inp){
     typedef typename sqrtTraits<T>::sqrtType sqrtType;
     sqrtType out;
+    for(auto el: inp)
+        out.insert(std::make_pair(el.first,sqrT(el.second)));
     return out;
-
-
-
-
-
-
 }
 
+//template for vector/list/forward_list
 template <typename T>
-std::list<T> sqrT(const std::list<T> & l) {
-    std::list<T> res(l.size());
-    std::transform(l.begin(), l.end(), res.begin(), [](T element){return sqrT(element);} );
-    return res;
+typename std::enable_if_t<sqrtTraits<T>::vec, T> sqrT(const T & inp){
+    typedef typename sqrtTraits<T>::sqrtType sqrtType;
+    sqrtType out;
+    std::transform(inp.begin(), inp.end(), out.begin(), [](T element){return sqrT(element);} );
+    return out;
 }
 
+//template for set/unordered_set
 template <typename T>
-std::forward_list<T> sqrT(const std::list<T> & l){
-    std::list<T> res(l.size());
-    std::transform(l.begin(), l.end(), res.begin(), [](const T & element){return sqrT(element);} );
-    return res;
+typename std::enable_if_t<sqrtTraits<T>::set, T> sqrT(const T & inp){
+    typedef typename sqrtTraits<T>::sqrtType sqrtType;
+    sqrtType out;
+    for(auto el: inp)
+        out.insert(sqrT(el));
+    return out;
 }
-
-template <typename T>
-std::set<T> sqrT(const std::set<T> & s){
-    std::set<T> res;
-    for(auto el: s) res.insert(sqrT(el));
-    return res;
-}
-
-template <typename T>
-std::unordered_set<T> sqrT(const std::unordered_set<T> & s){
-    std::unordered_set<T> res;
-    for(auto el: s) res.insert(sqrT(el));
-    return res;
-}
-
-
-template <typename K, typename V>
-std::unordered_map<K, V> sqrT(const std::unordered_map<K, V> & m){
-    std::unordered_map<K, V> res;
-    for(auto el: m) res.insert(sqrT(el));
-    return res;
-}
-
-template <typename K, typename V>
-std::map<K, V> sqrT(const std::map<K, V> & m) {
-    std::map<K, V> res;
-    for(auto el: m) res.insert(sqrT(el));
-    return res;
-}
-
-template <typename K, typename V>
-std::pair<K, V> sqrT(const std::pair <K, V> &p ) {
-    return std::make_pair(p.first,sqrT(p.second));
-}
-
-
