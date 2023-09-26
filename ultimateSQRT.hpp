@@ -11,9 +11,12 @@
 #include <map>
 #include <unordered_map>
 
+
+
 template <typename T>
 class sqrtTraits;
 
+// Для начала сделай все bool поля public. Ты же их вытаскиваешь потом в std::enable_if.
 template<typename T>
 class sqrtTraits<std::vector<T>> {
 public:
@@ -68,6 +71,10 @@ private:
     const static bool map = true;
 };
 
+// А теперь идем к месту, где не компиллируется. Вот в случае успеха инстанцирования, SFINAE функция возвращает тип T.
+// А ты возвращаешь "not a number", то есть const char[13]. Вот он и падает на этапе компиляции.
+// Лучше выброси исключение, например std::invalid_argument("neg number").
+// И зачем нужен  if (!std::is_arithmetic<T>::value) return "not a number"? Уже ж проверка была в ebable_if...
 
 template <typename T>
 typename std::enable_if_t<std::is_arithmetic<T>::value, T> sqrT(const T & x){
@@ -85,7 +92,10 @@ typename std::enable_if_t<sqrtTraits<T>::map, T> sqrT(const T & inp){
     return out;
 }
 
+//Вот здесь transform не скомпилируется по особым причинам.
+//Лучше просто циклом push_back делай да и всё.
 //template for vector/list/forward_list
+
 template <typename T>
 typename std::enable_if_t<sqrtTraits<T>::vec, T> sqrT(const T & inp){
     typedef typename sqrtTraits<T>::sqrtType sqrtType;
