@@ -14,6 +14,14 @@
 /// 4. SFINAE у тебя наверное тестовый, потому что хочется проверку на то, что итератор является Random Access, а у тебя проверка на то, что он поддерживает арифметику 0_o
 
 
+//Вторая итерация:
+// Алгоритм рабочий, SFINAE норм. Теперь по замечаниям:
+// 1. Параметр Compare в шаблоне должен быть по умолчанию такой: class Compare = std::less<>.
+// 2. Сделай декомпозицию. Сделай новую функцию, назови ее quickSort например. Она будет с enable_if, параметрами по умолчанию и тд...
+// А внутри ее тела будет только вызов функции sort. В самой реализации sort убираем enable_if и тд... Остаются только шаблоны и тело.
+// 3. Ну и про тесты. Мне тесты конечно не принципиальны, но у тебя они какие-то жиденькие... Добавь пару тестов на double, статические массивы что ли :)
+
+
 namespace sortFunction
 {
 	template <class RandomAccessIterator, typename Compare,typename T = std::enable_if<std::is_same<typename std::iterator_traits<RandomAccessIterator>::iterator_category, std::random_access_iterator_tag>::value>>
