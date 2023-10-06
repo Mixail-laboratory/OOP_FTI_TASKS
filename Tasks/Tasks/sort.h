@@ -24,7 +24,7 @@
 
 namespace sortFunction
 {
-	template <class RandomAccessIterator, typename Compare,typename T = std::enable_if<std::is_same<typename std::iterator_traits<RandomAccessIterator>::iterator_category, std::random_access_iterator_tag>::value>>
+	template <class RandomAccessIterator, typename Compare>
     void sort(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp) {
         if (first != last) {
             RandomAccessIterator left = first;
@@ -46,6 +46,11 @@ namespace sortFunction
             sortFunction::sort(right, last, comp);
         }
     }
+
+    template <class RandomAccessIterator, typename Compare = std::less<>, typename T = std::enable_if<std::is_same<typename std::iterator_traits<RandomAccessIterator>::iterator_category, std::random_access_iterator_tag>::value>>
+    void quickSort(RandomAccessIterator first, RandomAccessIterator last, const Compare& comp = Compare{}) {
+        sortFunction::sort(first, last, comp);
+    };
 }
 
 
