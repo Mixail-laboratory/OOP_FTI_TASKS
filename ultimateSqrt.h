@@ -19,46 +19,46 @@ class sqrtTraits;
 template<typename T>
 class sqrtTraits<std::vector<T>> {
 public:
-    typedef std::vector<T> sqrtType;
+    using sqrtType = std::vector<T>;
     static constexpr int vec = true;
 };
 template<typename T>
 class sqrtTraits<std::list<T>> {
 public:
-    typedef std::list<T> sqrtType;
+    using sqrtType = std::list<T>;
     static constexpr int vec = true;
 };
 template<typename T>
 class sqrtTraits<std::forward_list<T>> {
 public:
-    typedef std::forward_list<T> sqrtType;
+    using sqrtType = std::forward_list<T>;
     static constexpr int vec = true;
 };
 
 template<typename T>
 class sqrtTraits<std::set<T>> {
 public:
-    typedef std::set<T> sqrtType;
+    using sqrtType = std::set<T>;
     static constexpr int set = true;
 };
 template<typename T>
 class sqrtTraits<std::unordered_set<T>> {
 public:
-    typedef std::unordered_set<T> sqrtType;
+    using sqrtType = std::unordered_set<T> ;
     static constexpr int set = true;
 };
 
 template <typename K, typename V>
 class sqrtTraits<std::map<K, V>>{
 public:
-    typedef std::map<K, V> sqrtType;
+    using sqrtType = std::map<K, V>;
     static constexpr int map = true;
 };
 
 template <typename K, typename V>
 class sqrtTraits<std::unordered_map<K, V>>{
 public:
-    typedef std::unordered_map<K, V> sqrtType;
+    using sqrtType = std::unordered_map<K, V>;
     static constexpr int map = true;
 };
 
@@ -74,7 +74,7 @@ typename std::enable_if_t<std::is_arithmetic<T>::value, T> sqrT(const T & x){
 //template for map/unordered_map
 template <typename T>
 typename std::enable_if_t<sqrtTraits<T>::map, T> sqrT(const T & inp){
-    typedef typename sqrtTraits<T>::sqrtType sqrtType;
+    using sqrtType = typename sqrtTraits<T>::sqrtType;
     sqrtType out;
     for(auto const & el: inp)
         out.insert(std::make_pair(el.first,sqrT(el.second)));
@@ -84,7 +84,7 @@ typename std::enable_if_t<sqrtTraits<T>::map, T> sqrT(const T & inp){
 //template for vector/list
 template <typename T>
 typename std::enable_if_t<sqrtTraits<T>::vec, T> sqrT(const T & inp){
-    typedef typename sqrtTraits<T>::sqrtType sqrtType;
+    using sqrtType = typename sqrtTraits<T>::sqrtType;
     sqrtType out;
     for(auto const & el: inp){
         out.push_back(sqrT(el));
@@ -95,7 +95,7 @@ typename std::enable_if_t<sqrtTraits<T>::vec, T> sqrT(const T & inp){
 //template for set/unordered_set
 template <typename T>
 typename std::enable_if_t<sqrtTraits<T>::set, T> sqrT(const T & inp){
-    typedef typename sqrtTraits<T>::sqrtType sqrtType;
+    using sqrtType = typename sqrtTraits<T>::sqrtType;
     sqrtType out;
     for(auto const & el: inp)
         out.insert(sqrT(el));
